@@ -78,13 +78,3 @@ def save_links_to_file(links, filename):
     with open(filename, 'w') as file:
         for link in links:
             file.write(link + '\n')
-
-# def main():
-#     base_url = 'https://Mushfiqur-Rahman-Robin.github.io/'  # Change this to the website you want to crawl
-#     filtered_urls = crawl_website(base_url)
-
-#     save_links_to_file(filtered_urls, '../collected_links/selenium-extracted-links.txt')
-#     print(f"Number of links extracted: {len(filtered_urls)}")
-
-# if __name__ == '__main__':
-#     main()
