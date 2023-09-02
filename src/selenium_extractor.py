@@ -7,6 +7,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager  # Import webdriver manager
 
 def crawl_website(base_url):
     def get_all_urls(url):
@@ -19,9 +20,15 @@ def crawl_website(base_url):
 
         chrome_options = Options()
         chrome_options.add_argument("--headless")  # Run the browser in headless mode (without a visible window)
-        driver = webdriver.Chrome(executable_path = '/usr/local/bin/chromedriver', options=chrome_options) 
+        
+        # Use webdriver_manager to automatically download and manage Chrome webdriver
+        driver = webdriver.Chrome(ChromeDriverManager().install(), options=chrome_options)
 
         count = 0
+        
+        # Clear the file before starting the crawling process
+        clear_file()
+
         while queue:
             current_url = queue.popleft()
             count += 1
@@ -42,9 +49,10 @@ def crawl_website(base_url):
                         if expand_url not in visited_urls:
                             visited_urls.add(expand_url)
                             queue.append(expand_url)
+                            yield expand_url  # Yield the expanded URL
+                            save_to_file(expand_url)  # Save the expanded URL to the file
 
                 driver.get(current_url)
-                # WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))  # Wait for the page to load
                 expanded_content = driver.page_source
                 expanded_soup = BeautifulSoup(expanded_content, 'html.parser')
                 for link in expanded_soup.find_all('a'):
@@ -63,18 +71,28 @@ def crawl_website(base_url):
                     ):
                         visited_urls.add(href)
                         queue.append(href)
+                        yield href  # Yield the crawled URL
+                        save_to_file(href)  # Save the crawled URL to the file
 
         driver.quit()  # Close the browser after crawling
 
-        return visited_urls
+        # If no other URLs were visited except the base URL, add the base URL to the list
+        if len(visited_urls) == 1 and list(visited_urls)[0] == base_url:
+            yield base_url
+            save_to_file(base_url)  # Save the base URL to the file
+
+    def save_to_file(link):
+        with open('./collected_links/selenium-extracted-links.txt', 'a') as file:
+            file.write(link + '\n')
+
+    def clear_file():
+        # Clear the file contents before starting
+        with open('./collected_links/selenium-extracted-links.txt', 'w') as file:
+            file.write("")
 
     url = base_url
     all_urls = get_all_urls(url)
 
-    filtered_urls = [url for url in all_urls if url.startswith(base_url)]  # Filter URLs that start with the base_url
-    return filtered_urls
-
-def save_links_to_file(links, filename):
-    with open(filename, 'w') as file:
-        for link in links:
-            file.write(link + '\n')
+    for visited_url in all_urls:
+        if visited_url:
+            yield visited_url  # Yield the visited URL one at a time
