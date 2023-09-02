@@ -3,3 +3,4 @@ selenium==4.8.2
 BeautifulSoup4==4.11.2
 fastapi==0.95.0
 uvicorn==0.21.1
+webdriver_manager==4.0.0
