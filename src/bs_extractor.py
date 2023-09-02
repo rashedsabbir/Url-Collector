@@ -28,6 +28,12 @@ def crawl_website(base_url):
                 visited_urls.add(href)
                 queue.append(href)
 
+                # Save the visited URL to the file
+                with open('./collected_links/bs-extracted-links.txt', 'a') as file:
+                    file.write(href + '\n')
+
+                return href  # Return the visited URL
+
         count = 0
         while queue:
             current_url = queue.popleft()
@@ -44,15 +50,21 @@ def crawl_website(base_url):
                 print(f"ConnectionError: {e}")
                 continue
 
-        return visited_urls
+        # Check if no other URLs were visited, and if so, save the base URL
+        if len(visited_urls) == 1:
+            with open('./collected_links/bs-extracted-links.txt', 'a') as file:
+                file.write(base_url + '\n')
+
+        return list(visited_urls)  # Convert the set to a list
 
     url = base_url
-    all_urls = get_all_urls(url)
-
-    filtered_urls = [url for url in all_urls if url.startswith(base_url)]  # Filter URLs that start with the base_url
-    return filtered_urls
+    visited_urls = get_all_urls(url)
+    for visited_url in visited_urls:
+        if visited_url:
+            yield visited_url  # Yield the visited URL one by one
 
 def save_links_to_file(links, filename):
     with open(filename, 'w') as file:
         for link in links:
-            file.write(link + '\n')
+            if link:
+                file.write(link + '\n')
