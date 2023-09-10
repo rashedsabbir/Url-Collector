@@ -3,12 +3,32 @@ from fastapi import FastAPI, Form, Response
 from concurrent.futures import ThreadPoolExecutor
 from src.bs_extractor import crawl_website, save_links_to_file
 from fastapi.responses import StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the URL Crawler"}
+
+@app.get("/get-links")
+async def get_links():
+    try:
+        with open('../url-collector/collected_links/bs-extracted-links.txt', 'r') as file:
+            links = file.read().splitlines()
+        return {"links": links}
+    except FileNotFoundError:
+        return {"links": []}
 
 @app.post("/crawl/")
 async def start_crawling(base_url: str):
