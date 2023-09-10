@@ -1,5 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import "./App.css";
 
@@ -54,6 +56,21 @@ function App() {
     }
   };
 
+  const handleCopyClick = (link) => {
+    // Copy the link to the clipboard
+    navigator.clipboard
+      .writeText(link)
+      .then(() => {
+        toast.success("Link copied to clipboard!", { position: "top-right" });
+      })
+      .catch((error) => {
+        console.error("Error copying link to clipboard:", error);
+        toast.error("Failed to copy link to clipboard", {
+          position: "top-right",
+        });
+      });
+  };
+
   return (
     <>
       <div className="flex flex-col justify-center">
@@ -93,18 +110,58 @@ function App() {
       <div className="flex justify-center items-center py-8 text-blue-500">
         {loading && <p>Loading...</p>}
         {foundLinks.length > 0 ? (
-          <div>
-            <h2>Found Links:</h2>
-            <ul>
+          <div className="">
+            <p className="flex py-2 text-rose-400 justify-center">
+              Total Links Found: {numLinksFound}
+            </p>
+            <ul className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 grid-cols-1 gap-2">
               {foundLinks.map((link, index) => (
-                <li key={index}>{link}</li>
+                <li key={index}>
+                  <div className="">
+                    <div className="card w-96 bg-rose-500 text-primary-content shadow-xl">
+                      <div className="card-body">
+                        <h2 className="card-title">Link {index + 1}</h2>
+                        <p className="truncate">{link}</p>
+                        <div className="card-actions justify-end">
+                          <button
+                            className="btn btn-outline"
+                            onClick={() => handleCopyClick(link)}
+                          >
+                            Copy
+                          </button>
+                          <a
+                            className="text-warning"
+                            href={link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <button className="btn btn-outline btn-warning">
+                              Visit
+                            </button>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
               ))}
             </ul>
-            <p>Total Links Found: {numLinksFound}</p>
           </div>
         ) : null}
         {error && <p>Error: {error}</p>}
       </div>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
     </>
   );
 }
