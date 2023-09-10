@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./App.css";
 
@@ -27,28 +27,41 @@ function App() {
         }
       );
 
-      if (response.status === 200) {
-        const data = response.data;
+      console.log("Response from server:", response);
 
-        if (data.links && data.links.length > 0) {
-          setFoundLinks(data.links);
-          setNumLinksFound(data.links.length);
+      if (response.status === 200) {
+        // Fetch the links from the server
+        const linksResponse = await axios.get(
+          `http://localhost:8000/get-links`
+        );
+        const linksData = linksResponse.data;
+
+        if (linksData.links && linksData.links.length > 0) {
+          setFoundLinks(linksData.links);
+          setNumLinksFound(linksData.links.length);
         } else {
           setError("No links found.");
         }
       } else {
         setError("Error fetching data.");
       }
+
+      setLoading(false);
     } catch (error) {
+      console.error("Error fetching data:", error);
       setError("Error fetching data: " + error.message);
-    } finally {
       setLoading(false);
     }
   };
 
   return (
     <>
-      <div className="min-h-screen flex flex-col justify-center">
+      <div className="flex flex-col justify-center">
+        <div className="flex justify-center items-center py-8">
+          <h3 className="text-rose-400 font-mono font-bold text-3xl">
+            Url Collector
+          </h3>
+        </div>
         <div className="relative w-full sm:max-w-2xl px-2 sm:mx-auto">
           <div className="overflow-hidden z-0 rounded-full relative p-3">
             <form
@@ -77,19 +90,21 @@ function App() {
           </div>
         </div>
       </div>
-      {loading && <p>Loading...</p>}
-      {foundLinks.length > 0 ? (
-        <div>
-          <h2>Found Links:</h2>
-          <ul>
-            {foundLinks.map((link, index) => (
-              <li key={index}>{link}</li>
-            ))}
-          </ul>
-          <p>Total Links Found: {numLinksFound}</p>
-        </div>
-      ) : null}
-      {error && <p>Error: {error}</p>}
+      <div className="flex justify-center items-center py-8 text-blue-500">
+        {loading && <p>Loading...</p>}
+        {foundLinks.length > 0 ? (
+          <div>
+            <h2>Found Links:</h2>
+            <ul>
+              {foundLinks.map((link, index) => (
+                <li key={index}>{link}</li>
+              ))}
+            </ul>
+            <p>Total Links Found: {numLinksFound}</p>
+          </div>
+        ) : null}
+        {error && <p>Error: {error}</p>}
+      </div>
     </>
   );
 }
