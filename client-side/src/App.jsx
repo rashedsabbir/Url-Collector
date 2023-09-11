@@ -19,6 +19,19 @@ function App() {
     setError(null);
 
     try {
+      // Clear previously extracted links
+      setFoundLinks([]);
+      setNumLinksFound(0);
+
+      // Check if the inputUrl is empty
+      if (!inputUrl) {
+        toast.error("Please enter a url first!", {
+          position: "top-right",
+        });
+        setLoading(false);
+        return;
+      }
+
       const response = await axios.post(
         `http://localhost:8000/crawl/?base_url=${encodeURIComponent(inputUrl)}`,
         null,
