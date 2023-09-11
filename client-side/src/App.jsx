@@ -70,7 +70,6 @@ function App() {
   };
 
   const handleCopyClick = (link) => {
-    // Copy the link to the clipboard
     navigator.clipboard
       .writeText(link)
       .then(() => {
@@ -82,6 +81,19 @@ function App() {
           position: "top-right",
         });
       });
+  };
+
+  const handleDownloadTxt = () => {
+    const linkText = foundLinks.join("\n");
+    const blob = new Blob([linkText], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "extracted_links.txt";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -124,9 +136,17 @@ function App() {
         {loading && <p>Loading...</p>}
         {foundLinks.length > 0 ? (
           <div className="">
-            <p className="flex py-2 text-rose-400 justify-center">
-              Total Links Found: {numLinksFound}
-            </p>
+            <div className="flex flex-row gap-6 justify-center p-4">
+              <p className="flex items-center text-rose-400 justify-center">
+                Total Links Found: {numLinksFound}
+              </p>
+              <button
+                className="btn btn-info border-none btn-outline"
+                onClick={handleDownloadTxt}
+              >
+                Download all
+              </button>
+            </div>
             <ul className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 grid-cols-1 gap-2">
               {foundLinks.map((link, index) => (
                 <li key={index}>
