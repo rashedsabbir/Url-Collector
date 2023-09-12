@@ -4,6 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import "./App.css";
+import { DotSpinner } from "@uiball/loaders";
 
 function App() {
   const [loading, setLoading] = useState(false);
@@ -12,23 +13,40 @@ function App() {
   const [inputUrl, setInputUrl] = useState("");
   const [error, setError] = useState(null);
 
+  const fetchLinks = async () => {
+    try {
+      const linksResponse = await axios.get(`http://localhost:8000/get-links`);
+      const linksData = linksResponse.data;
+
+      if (linksData.links && linksData.links.length > 0) {
+        setFoundLinks(linksData.links);
+        setNumLinksFound(linksData.links.length);
+      } else {
+        setError("No links found.");
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setError("Error fetching data: " + error.message);
+    } finally {
+      setLoading(false); // Hide loading spinner after data is fetched
+    }
+  };
+
   const handleSearch = async (event) => {
     event.preventDefault();
 
-    setLoading(true);
+    setLoading(true); // Show loading spinner
     setError(null);
 
     try {
-      // Clear previously extracted links
-      setFoundLinks([]);
+      setFoundLinks([]); // Clear previously extracted links
       setNumLinksFound(0);
 
-      // Check if the inputUrl is empty
       if (!inputUrl) {
-        toast.error("Please enter a url first!", {
+        toast.error("Please enter a URL first!", {
           position: "top-right",
         });
-        setLoading(false);
+        setLoading(false); // Hide loading spinner
         return;
       }
 
@@ -45,27 +63,16 @@ function App() {
       console.log("Response from server:", response);
 
       if (response.status === 200) {
-        // Fetch the links from the server
-        const linksResponse = await axios.get(
-          `http://localhost:8000/get-links`
-        );
-        const linksData = linksResponse.data;
-
-        if (linksData.links && linksData.links.length > 0) {
-          setFoundLinks(linksData.links);
-          setNumLinksFound(linksData.links.length);
-        } else {
-          setError("No links found.");
-        }
+        // Fetch the links only when the user submits a base URL
+        fetchLinks();
       } else {
         setError("Error fetching data.");
+        setLoading(false); // Hide loading spinner
       }
-
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
       setError("Error fetching data: " + error.message);
-      setLoading(false);
+      setLoading(false); // Hide loading spinner
     }
   };
 
@@ -122,7 +129,7 @@ function App() {
                 type="submit"
                 className="bg-indigo-500 text-white rounded-full rounded-l-lg font-semibold px-4 py-4 hover:bg-indigo-400 focus:bg-indigo-600 focus:outline-none"
               >
-                Search
+                {loading ? "Searching" : "Search"}
               </button>
             </form>
             <div className="glow glow-1 z-10 bg-pink-400 absolute"></div>
@@ -133,7 +140,7 @@ function App() {
         </div>
       </div>
       <div className="flex justify-center items-center py-8 text-blue-500">
-        {loading && <p>Loading...</p>}
+        {loading && <DotSpinner size={100} speed={0.9} color="purple" />}
         {foundLinks.length > 0 ? (
           <div className="">
             <div className="flex flex-row gap-6 justify-center p-4">
