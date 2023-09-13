@@ -1,12 +1,16 @@
 import os
 import sys
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import uvicorn
-from fastapi import FastAPI, Form, Response
+from fastapi import FastAPI, Form, HTTPException
 from concurrent.futures import ThreadPoolExecutor
-from src.bs_extractor import crawl_website, save_links_to_file
+from src.bs_extractor import crawl_website
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
+
+# Initialization of global list to hold the links.
+links = []
 
 app = FastAPI()
 
@@ -25,31 +29,21 @@ def read_root():
     return {"message": "Welcome to the URL Crawler"}
 
 @app.get("/get-links")
-async def get_links():
-    try:
-        with open('../../url-collector/collected_links/bs-extracted-links.txt', 'r') as file:
-            links = file.read().splitlines()
-        return {"links": links}
-    except FileNotFoundError:
-        return {"links": []}
+def get_links():
+    return {"links": links}
 
 @app.post("/crawl/")
-async def start_crawling(base_url: str):
-    def crawling_task():
-        filtered_urls = crawl_website(base_url)
-        save_links_to_file(filtered_urls, '../../url-collector/collected_links/bs-extracted-links.txt')
-        return filtered_urls
+def start_crawling(base_url: str):
+
+    global links
+
+    def crawling_task(base_url, links):
+        return crawl_website(base_url)  # Assuming `crawl_website` function takes a list and returns a list of links.
 
     with ThreadPoolExecutor() as executor:
-        future = executor.submit(crawling_task)
-        result = future.result()
+        links = executor.submit(crawling_task, base_url, links).result()
 
-    async def generate_links():
-        for link in result:
-            yield link + '\n'
-
-    return StreamingResponse(content=generate_links(), media_type="text/plain")
-
+    return {"message": "Crawling Finished!"}
 
 if __name__ == "__main__":
     uvicorn.run("app_bs:app", host="0.0.0.0", port=8000, reload=True)
