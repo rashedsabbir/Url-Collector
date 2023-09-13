@@ -82,12 +82,12 @@ def crawl_website(base_url):
             save_to_file(base_url)  # Save the base URL to the file
 
     def save_to_file(link):
-        with open('./collected_links/selenium-extracted-links.txt', 'a') as file:
+        with open('.././collected_links/selenium-extracted-links.txt', 'a') as file:
             file.write(link + '\n')
 
     def clear_file():
         # Clear the file contents before starting
-        with open('./collected_links/selenium-extracted-links.txt', 'w') as file:
+        with open('.././collected_links/selenium-extracted-links.txt', 'w') as file:
             file.write("")
 
     url = base_url

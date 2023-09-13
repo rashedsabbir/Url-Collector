@@ -28,11 +28,11 @@ def crawl_website(base_url):
                 visited_urls.add(href)
                 queue.append(href)
 
-                # Save the visited URL to the file
-                with open('./collected_links/bs-extracted-links.txt', 'a') as file:
+                # Save the visited URL to the file within the conditions
+                with open('../../url-collector/collected_links/bs-extracted-links.txt', 'a') as file:
                     file.write(href + '\n')
 
-                return href  # Return the visited URL
+            return href  # Return the visited URL
 
         count = 0
         while queue:
@@ -52,7 +52,7 @@ def crawl_website(base_url):
 
         # Check if no other URLs were visited, and if so, save the base URL
         if len(visited_urls) == 1:
-            with open('./collected_links/bs-extracted-links.txt', 'a') as file:
+            with open('../../url-collector/collected_links/bs-extracted-links.txt', 'a') as file:
                 file.write(base_url + '\n')
 
         return list(visited_urls)  # Convert the set to a list
