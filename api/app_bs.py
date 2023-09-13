@@ -37,11 +37,11 @@ def start_crawling(base_url: str):
 
     global links
 
-    def crawling_task(base_url, links):
-        return crawl_website(base_url)  # Assuming `crawl_website` function takes a list and returns a list of links.
+    def crawling_task(base_url):
+        return crawl_website(base_url)
 
     with ThreadPoolExecutor() as executor:
-        links = executor.submit(crawling_task, base_url, links).result()
+        links = executor.submit(crawling_task, base_url).result()
 
     return {"message": "Crawling Finished!"}
 
