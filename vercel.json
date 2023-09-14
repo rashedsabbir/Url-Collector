@@ -1,8 +1,15 @@
 {
-    "builds": [
-      {"src": "/app_bs.py", "use": "@now/python"}
-    ],
-    "routes": [
-      {"src": "/(.*)", "dest": "/app_bs.py"}
-    ]
-  }
+  "devCommand": "uvicorn app_bs:app --host 0.0.0.0 --port 8000",
+  "builds": [
+      {
+          "src": "api/app_bs.py",
+          "use": "@vercel/python"
+      }
+  ],
+  "routes": [
+      {
+          "src": "/(.*)",
+          "dest": "api/app_bs.py"
+      }
+  ]
+}
