@@ -6,6 +6,7 @@ import axios from "axios";
 import "./App.css";
 import { DotSpinner } from "@uiball/loaders";
 import Typewriter from "typewriter-effect";
+import Footer from "./components/Footer";
 
 function App() {
   const [loading, setLoading] = useState(false);
@@ -112,25 +113,11 @@ function App() {
     URL.revokeObjectURL(url);
   };
 
-  useEffect(() => {
-    const script = document.createElement("script");
-
-    script.src = "https://platform.linkedin.com/badges/js/profile.js";
-    script.async = true;
-    script.defer = true;
-
-    document.body.appendChild(script);
-
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
-
   return (
     <>
       <div className="flex flex-col justify-center">
         <div className="flex justify-center items-center py-8 text-rose-400 font-mono font-bold text-4xl">
-          <img className="mx-4" src="/src/assets/www.png" width={40} alt="" />
+          <img className="mx-4" src="www.png" width={50} alt="" />
           <Typewriter
             className=""
             options={{
@@ -219,29 +206,7 @@ function App() {
         ) : null}
         {error && <p>Error: {error}</p>}
       </div>
-      <h3 className="flex justify-center text-rose-400 font-bold font-mono text-xl py-4">
-        Developed By:
-      </h3>
-      <div className="flex lg:flex-row flex-col justify-center items-center ">
-        <div
-          className="badge-base LI-profile-badge"
-          data-locale="en_US"
-          data-size="medium"
-          data-theme="light"
-          data-type="VERTICAL"
-          data-vanity="mushfiqur--rahman"
-          data-version="v1"
-        ></div>
-        <div
-          className="badge-base LI-profile-badge"
-          data-locale="en_US"
-          data-size="medium"
-          data-theme="light"
-          data-type="HORIZONTAL"
-          data-vanity="rashedsabbir"
-          data-version="v1"
-        ></div>
-      </div>
+      <Footer />
       <ToastContainer
         position="bottom-right"
         autoClose={5000}
