@@ -3,63 +3,41 @@ import React, { useEffect, useState } from "react";
 import { Icon } from "@iconify/react";
 
 const Footer = () => {
-  const [counts, setCounts] = useState({ visits: 0, pageviews: 0 });
+  const [counts, setCounts] = useState({ visits: 25, pageviews: 269 });
 
   useEffect(() => {
-    // Check if it's a new visit (sessionStorage not set)
-    const isNewVisit = sessionStorage.getItem("visit") === null;
+    // Check if it's a new visit (local storage not set)
+    const isNewVisit = localStorage.getItem("visit") === null;
 
     if (isNewVisit) {
       // It's a new visit, increment both visits and pageviews
-      sessionStorage.setItem("visit", "x");
-      const fetchData = async () => {
-        try {
-          const response = await fetch(
-            "http://localhost:8000/count?type=visit-pageview",
-            {
-              method: "GET",
-              credentials: "include",
-            }
-          );
-
-          if (response.ok) {
-            const data = await response.json();
-            setCounts(data);
-          } else {
-            console.error("Error fetching counts:", response.status);
-          }
-        } catch (error) {
-          console.error("Error fetching counts:", error);
-        }
-      };
-
-      fetchData();
+      localStorage.setItem("visit", "x");
+      updateCounts({ visits: 1, pageviews: 1 });
     } else {
       // It's a pageview, increment pageviews only
-      const fetchData = async () => {
-        try {
-          const response = await fetch(
-            "http://localhost:8000/count?type=pageview",
-            {
-              method: "GET",
-              credentials: "include",
-            }
-          );
-
-          if (response.ok) {
-            const data = await response.json();
-            setCounts(data);
-          } else {
-            console.error("Error fetching pageview count:", response.status);
-          }
-        } catch (error) {
-          console.error("Error fetching pageview count:", error);
-        }
-      };
-
-      fetchData();
+      updateCounts({ pageviews: 1 });
     }
   }, []); // Empty dependency array to run only once during initial render
+
+  const updateCounts = (increment) => {
+    // Retrieve current counts from local storage
+    const currentCounts = JSON.parse(localStorage.getItem("counts")) || {
+      visits: 0,
+      pageviews: 0,
+    };
+
+    // Update the counts
+    const updatedCounts = {
+      visits: currentCounts.visits + (increment.visits || 0),
+      pageviews: currentCounts.pageviews + (increment.pageviews || 0),
+    };
+
+    // Update state with the modified counts
+    setCounts(updatedCounts);
+
+    // Save the updated counts to local storage
+    localStorage.setItem("counts", JSON.stringify(updatedCounts));
+  };
 
   return (
     <div>
