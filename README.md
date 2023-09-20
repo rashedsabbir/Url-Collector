@@ -54,7 +54,7 @@ To run the client-side of the application, follow these steps:
 1. Clone the repository to your local machine:
 
    ```bash
-   git clone https://github.com/Mushfiqur-Rahman-Robin/url-collector
+   git clone https://github.com/Mushfiqur-Rahman-Robin/url-collector.git
 Navigate to the client-side directory:
 
   ```bash
