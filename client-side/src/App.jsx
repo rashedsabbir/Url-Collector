@@ -18,9 +18,7 @@ function App() {
   //Fetch Link
   const fetchLinks = async () => {
     try {
-      const linksResponse = await axios.get(
-        `https://url-collector.vercel.app/get-links`
-      );
+      const linksResponse = await axios.get(`http://localhost:8000/get-links`);
       const linksData = linksResponse.data;
 
       if (linksData.links && linksData.links.length > 0) {
@@ -57,9 +55,7 @@ function App() {
       }
 
       const response = await axios.post(
-        `https://url-collector.vercel.app/crawl/?base_url=${encodeURIComponent(
-          inputUrl
-        )}`,
+        `http://localhost:8000/crawl/?base_url=${encodeURIComponent(inputUrl)}`,
         null,
         {
           headers: {
