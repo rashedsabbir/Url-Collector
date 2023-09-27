@@ -11,7 +11,6 @@ URL Collector is a web application that allows you to extract links from a websi
 - [Getting Started](#getting-started)
   - [Client Side](#client-side)
   - [Server Side](#server-side)
-- [Desktop and Mobile View](#desktop-and-mobile-view)
 - [Contributors](#contributors)
 
 ## Features
@@ -110,7 +109,7 @@ python app_bs.py
 python app_selenium.py
 ```
 
-Contributors
+## Contributors
 This project is maintained by the following contributors:
 
 [Md Mushfiqur Rahman Robin](https://github.com/Mushfiqur-Rahman-Robin)\
